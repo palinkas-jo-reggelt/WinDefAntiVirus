@@ -12,5 +12,5 @@
 
  ```Powershell -File "C:\path\to\script\WinDefAntiVirus.ps1" "%FILE%"```
 		
- Enter "2" for Return value 
+ Enter `2` for Return value 
  
