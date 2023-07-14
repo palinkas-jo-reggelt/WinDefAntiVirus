@@ -38,7 +38,7 @@ $ScanTries = 3                                   # Number of times to try scanni
 
 Function Log($Msg) {
 	$LogFile = "$LogFolder\WinDefAntiVirus.log"
-	If (-Not(Test-Path $LogFile)) {New-Item $LogFile}
+	If (-Not(Test-Path $LogFile)) {New-Item $LogFile -Force}
 	Write-Output "$((Get-Date).ToString('yy-MM-dd HH:mm:ss.fff')) : $Msg" | Out-File $LogFile -Append -Encoding ASCII
 }
 
