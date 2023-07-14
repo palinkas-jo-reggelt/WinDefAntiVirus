@@ -98,7 +98,7 @@ If (Test-Path $FileToScan) {
 
 				If ($WinDef.ExitCode -eq 0) {
 					If ($IterateScan -gt 0) {
-						Log "[CLEAN] : $FileToScan : Clean message on scan # $($IterateScan +1) : Exit code $($WinDef.ExitCode)"
+						Log "[CLEAN] : $FileToScan : Clean message on scan # $($IterateScan +1) - Exit code $($WinDef.ExitCode)"
 					}
 					Exit 0
 				}
