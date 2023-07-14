@@ -89,7 +89,7 @@ If (Test-Path $FileToScan) {
 		If (Confirm-FileNotLocked $FileToScan) {
 			Do {
 				Try {
-					$WinDef = Execute-Command -CommandPath "$Env:ProgramW6432\Windows Defender\MpCmdRun.exe" -CommandArguments "-Scan -ScanType 3 -File $FileToScan -DisableRemediation"
+					$WinDef = Execute-Command -CommandPath "$Env:ProgramW6432\Windows Defender\MpCmdRun.exe" -CommandArguments "-Scan -ScanType 3 -File ""$FileToScan"" -DisableRemediation"
 				}
 				Catch {
 					Log "[ERROR] : $FileToScan : Error running Windows Defender command: $($Error[0])"
