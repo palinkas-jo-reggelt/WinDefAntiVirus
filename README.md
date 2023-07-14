@@ -10,7 +10,7 @@
 
  Enter into hMailServer Admin Console > Settings > Anti-virus > External virus scanner > Scanner executable:
 
- Powershell -File "C:\path\to\script\WinDefAntiVirus.ps1" "%FILE%"
+ ```Powershell -File "C:\path\to\script\WinDefAntiVirus.ps1" "%FILE%"```
 		
  Enter "2" for Return value 
  
