@@ -74,6 +74,17 @@ Function Confirm-FileNotLocked ($FileToScan) {
 	}
 }
 
+Function Ordinal ($Integer) {
+	$Return = Switch ($Integer) {
+		1 {"first"; Break}
+		2 {"second"; Break}
+		3 {"third"; Break}
+		4 {"fourth"; Break}
+		Default {$Integer; Break}
+	}
+	Return $Return 
+}
+
 <###   START SCRIPT   ###>
 
 If ([String]::IsNullOrEmpty($FileToScan)) {
@@ -92,41 +103,42 @@ If (Test-Path $FileToScan) {
 					$WinDef = Execute-Command -CommandPath "$Env:ProgramW6432\Windows Defender\MpCmdRun.exe" -CommandArguments "-Scan -ScanType 3 -File ""$FileToScan"" -DisableRemediation"
 				}
 				Catch {
-					Log "[ERROR] : $FileToScan : Error running Windows Defender command: $($Error[0])"
+					Log "[ERROR] : $FileToScan : Error running Windows Defender command : $($Error[0])"
 					Exit 0
 				}
 
 				If ($WinDef.ExitCode -eq 0) {
 					If ($IterateScan -gt 0) {
-						Log "[CLEAN] : $FileToScan : Clean message on scan # $($IterateScan +1) - Exit code $($WinDef.ExitCode)"
+						Log "[CLEAN] : $FileToScan : Clean message on $(Ordinal ($IterateScan + 1)) scan : Exit code $($WinDef.ExitCode)"
 					}
 					Exit 0
 				}
 
 				If (-not([String]::IsNullOrEmpty($WinDef.StdErr))) {
-					Log "[ERROR] : $FileToScan : Error on scan # $($IterateScan + 1) - $($WinDef.StdErr)"
+					Log "[ERROR] : $FileToScan : Error on $(Ordinal ($IterateScan + 1)) scan : $($WinDef.StdErr)"
 				}
 
 				If (-not([String]::IsNullOrEmpty($WinDef.ExitCode))) {
-					Log "[VIRUS] : $FileToScan : Exit code $($WinDef.ExitCode) on scan # $($IterateScan + 1)"
+					$VirusName = ($WinDef.StdOut | Select-String -Pattern "(?<=\sVirus:).*").Matches.Value 
+					$VirusName = $VirusName -Replace "[\n\r|\r\n|\r|\n]",[string]::Empty
+					If (-not([String]::IsNullOrEmpty($VirusName))) {
+						Log "[VIRUS] : $FileToScan : VIRUS FOUND! $VirusName : Found on $(Ordinal ($IterateScan + 1)) scan : Exit code $($WinDef.ExitCode)"
+						Exit $WinDef.ExitCode
+					} Else {
+						Log "[VIRUS] : $FileToScan : Exit code $($WinDef.ExitCode) on $(Ordinal ($IterateScan + 1)) scan : Probable error : Try again"
+					}
 				} Else {
-					Log "[ERROR] : $FileToScan : No exit code on scan # $($IterateScan + 1) - Quitting"
+					Log "[ERROR] : $FileToScan : No exit code on $(Ordinal ($IterateScan + 1)) scan : Quitting"
 					Exit 0
 				}
 
 				Start-Sleep -Seconds 1
 				$IterateScan++
-
 			} Until ($IterateScan -eq $ScanTries)
-
-			$VirusName = ($WinDef.StdOut | Select-String -Pattern "(?<=\sVirus:).*").Matches.Value 
-			$VirusName = $VirusName -Replace "[\n\r|\r\n|\r|\n]",""
-			Log "[VIRUS] : $FileToScan : VIRUS FOUND! $VirusName"
-			Exit $WinDef.ExitCode
 		}
 
 		If ($IterateFileLocked -lt ($ScanTries - 1)) {
-			Log "[FLOCK] : $FileToScan : File LOCKED on try # $($IterateFileLocked + 1)! Trying again"
+			Log "[FLOCK] : $FileToScan : File LOCKED on $(Ordinal ($IterateFileLocked + 1)) try! Trying again"
 		} Else {
 			Log "[FLOCK] : $FileToScan : File LOCKED on last try! Quitting"
 			Exit 0
@@ -134,7 +146,6 @@ If (Test-Path $FileToScan) {
 
 		Start-Sleep -Seconds 1
 		$IterateFileLocked++
-
 	} Until ($IterateFileLocked -eq $ScanTries)
 
 } Else {
