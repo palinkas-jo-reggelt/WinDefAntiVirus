@@ -120,7 +120,7 @@ If (Test-Path $FileToScan) {
 
 				If (-not([String]::IsNullOrEmpty($WinDef.ExitCode))) {
 					$VirusName = ($WinDef.StdOut | Select-String -Pattern "(?<=\sVirus:).*").Matches.Value 
-					$VirusName = $VirusName -Replace "[\n\r|\r\n|\r|\n]",[string]::Empty
+					$VirusName = $VirusName -Replace "[\n\r]+",""
 					If (-not([String]::IsNullOrEmpty($VirusName))) {
 						Log "[VIRUS] : $FileToScan : VIRUS FOUND! $VirusName : Found on $(Ordinal ($IterateScan + 1)) scan : Exit code $($WinDef.ExitCode)"
 						Exit $WinDef.ExitCode
