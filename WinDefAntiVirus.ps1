@@ -88,7 +88,7 @@ Function Ordinal ($Integer) {
 <###   START SCRIPT   ###>
 
 If ([String]::IsNullOrEmpty($FileToScan)) {
-	Log "[ERROR] : No message file argument presented : Quitting"
+	Log "[ERROR] : No file argument presented : Quitting"
 	Exit 0
 }
 
@@ -109,7 +109,7 @@ If (Test-Path $FileToScan) {
 
 				If ($WinDef.ExitCode -eq 0) {
 					If ($IterateScan -gt 0) {
-						Log "[CLEAN] : $FileToScan : Clean message on $(Ordinal ($IterateScan + 1)) scan : Exit code $($WinDef.ExitCode)"
+						Log "[CLEAN] : $FileToScan : Clean scan on $(Ordinal ($IterateScan + 1)) scan : Exit code $($WinDef.ExitCode)"
 					}
 					Exit 0
 				}
@@ -125,7 +125,7 @@ If (Test-Path $FileToScan) {
 						Log "[VIRUS] : $FileToScan : VIRUS FOUND! $VirusName : Found on $(Ordinal ($IterateScan + 1)) scan : Exit code $($WinDef.ExitCode)"
 						Exit $WinDef.ExitCode
 					} Else {
-						Log "[VIRUS] : $FileToScan : Exit code $($WinDef.ExitCode) on $(Ordinal ($IterateScan + 1)) scan : Probable error : Try again"
+						Log "[VIRUS] : $FileToScan : Probable error on $(Ordinal ($IterateScan + 1)) scan : Exit code $($WinDef.ExitCode) : Trying again"
 					}
 				} Else {
 					Log "[ERROR] : $FileToScan : No exit code on $(Ordinal ($IterateScan + 1)) scan : Quitting"
@@ -138,9 +138,9 @@ If (Test-Path $FileToScan) {
 		}
 
 		If ($IterateFileLocked -lt ($ScanTries - 1)) {
-			Log "[FLOCK] : $FileToScan : File LOCKED on $(Ordinal ($IterateFileLocked + 1)) try! Trying again"
+			Log "[FLOCK] : $FileToScan : File LOCKED on $(Ordinal ($IterateFileLocked + 1)) try : Trying again"
 		} Else {
-			Log "[FLOCK] : $FileToScan : File LOCKED on last try! Quitting"
+			Log "[FLOCK] : $FileToScan : File LOCKED on last try : Quitting"
 			Exit 0
 		}
 
@@ -149,6 +149,6 @@ If (Test-Path $FileToScan) {
 	} Until ($IterateFileLocked -eq $ScanTries)
 
 } Else {
-	Log "[NOFND] : $FileToScan : File could not be found! Quitting"
+	Log "[NOFND] : $FileToScan : File could not be found : Quitting"
 	Exit 0
 }
